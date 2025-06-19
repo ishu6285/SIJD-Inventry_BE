@@ -16,6 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class StockServiceImpl implements StockService {
@@ -92,6 +95,15 @@ public class StockServiceImpl implements StockService {
                         .itemQuantity(stockIn.getStockInQuantity())
                         .build()
         );
+    }
+
+    @Override
+    public List<String> itemSearch(String searchQuery) {
+        List<String> searchList =currentStockRepository.findItemNamesBySearchQuery(searchQuery);
+        if(!searchList.isEmpty()){
+            return searchList;
+        }
+        return null;
     }
 
     private ItemCurrent buildItemCurrent(StockRequest stockRequest) {

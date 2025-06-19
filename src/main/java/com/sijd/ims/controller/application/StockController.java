@@ -14,6 +14,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RequestMapping(value = "/api/${version}/admin/")
 @RequiredArgsConstructor
@@ -64,6 +66,11 @@ public class StockController {
 
         return ResponseEntity.ok(stockService.getAllStockInItem(pageable));
 
+    }
+
+    @GetMapping("item/search/{searchQuery}")
+    ResponseEntity<List<String>> itemSearch(@PathVariable String searchQuery){
+        return ResponseEntity.ok(stockService.itemSearch(searchQuery));
     }
 
 }
