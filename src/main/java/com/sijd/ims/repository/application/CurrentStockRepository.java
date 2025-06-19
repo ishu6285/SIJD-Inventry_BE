@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface CurrentStockRepository extends JpaRepository<ItemCurrent,Long> {
     boolean existsByItemName(String itemName);
     ItemCurrent findByItemName(String itemName);
+
 }

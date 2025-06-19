@@ -1,0 +1,249 @@
+{
+	"info": {
+		"_postman_id": "65ffd218-51ca-49a0-b950-9b468a4399a8",
+		"name": "SIJD inventry",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "33521015",
+		"_collection_link": "https://snapit-2490.postman.co/workspace/snapit-Workspace~51c0fcdc-2556-483e-a317-816b827354ab/collection/33521015-65ffd218-51ca-49a0-b950-9b468a4399a8?action=share&source=collection_link&creator=33521015"
+	},
+	"item": [
+		{
+			"name": "authentication",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"firstName\": \"John\",\r\n  \"lastName\": \"Doe\",\r\n  \"middleName\": \"A\",\r\n  \"userType\": \"ADMIN\",\r\n  \"email\": \"isharaumesh2000@gmail.com\",\r\n  \"password\": \"ishara@123\",\r\n  \"nickName\": \"Johnny\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/sijd/api/{{$placeholder}}/auth/user/register"
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response JSON\r",
+									"let response = pm.response.json();\r",
+									"\r",
+									"// Check if data exists and set environment variables\r",
+									"if (response.data) {\r",
+									"    pm.environment.set(\"authToken\", response.data.token);\r",
+									"    pm.environment.set(\"refreshToken\", response.data.refreshToken);\r",
+									"    pm.environment.set(\"tokenExpiry\", response.data.expirationTime);\r",
+									"    console.log(\"Tokens and expiration time saved to environment.\");\r",
+									"} else {\r",
+									"    console.warn(\"No data object found in response.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"admin@gmail.com\",\r\n  \"password\": \"admin@123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/sijd/api/{{$placeholder}}/auth/user/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "stock in and out",
+			"item": [
+				{
+					"name": "stock in",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{authToken}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"itemName\": \"Laptop\",\n    \"quantity\": 10.50\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/sijd/api/v1/admin/stock/in"
+					},
+					"response": []
+				},
+				{
+					"name": "stock out",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{authToken}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"itemName\": \"Laptop\",\n    \"quantity\": 2.00\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/sijd/api/v1/admin/stock/out"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "get stock all",
+			"item": [
+				{
+					"name": "get all current stock",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{authToken}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/sijd/api/v1/admin/get/all/current-stock?page=0&size=5&sortField=createdDateTime&sortDirection=desc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"sijd",
+								"api",
+								"v1",
+								"admin",
+								"get",
+								"all",
+								"current-stock"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								},
+								{
+									"key": "sortField",
+									"value": "createdDateTime"
+								},
+								{
+									"key": "sortDirection",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all stock in",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{authToken}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/sijd/api/v1/admin/get/all/stock-in?page=0&size=5&sortField=createdDateTime&sortDirection=desc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"sijd",
+								"api",
+								"v1",
+								"admin",
+								"get",
+								"all",
+								"stock-in"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								},
+								{
+									"key": "sortField",
+									"value": "createdDateTime"
+								},
+								{
+									"key": "sortDirection",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "$placeholder",
+			"value": "",
+			"type": "default"
+		}
+	]
+}

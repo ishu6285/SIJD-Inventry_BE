@@ -1,6 +1,8 @@
 package com.sijd.ims.service.impl;
 
+import com.sijd.ims.dto.application.StockCommonItemPaginateDto;
 import com.sijd.ims.dto.application.StockRequest;
+import com.sijd.ims.entity.AuditModifyUser;
 import com.sijd.ims.entity.application.ItemCurrent;
 import com.sijd.ims.entity.application.ItemStockIn;
 import com.sijd.ims.entity.application.ItemStockOut;
@@ -9,6 +11,8 @@ import com.sijd.ims.repository.application.StockInRepository;
 import com.sijd.ims.repository.application.StockOutRepository;
 import com.sijd.ims.service.application.StockService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +70,28 @@ public class StockServiceImpl implements StockService {
                 stockRequest.getItemName(),
                 stockRequest.getQuantity(),
                 current.getItemQuantity());
+    }
+
+    @Override
+    public Page<ItemCurrent> getAllCurrentItem(Pageable pageable) {
+        return currentStockRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<StockCommonItemPaginateDto> getAllStockInItem(Pageable pageable) {
+        return stockInRepository.findAll(pageable).map(stockIn ->
+                StockCommonItemPaginateDto.builder()
+                        .version(stockIn.getVersion())
+                        .createdUser(stockIn.getCreatedUser())
+                        .createdDateTime(stockIn.getCreatedDateTime())
+                        .modifiedUser(stockIn.getModifiedUser())
+                        .modifiedDateTime(stockIn.getModifiedDateTime())
+                        .status(String.valueOf(stockIn.getStatus()))
+                        .itemId(stockIn.getItemId())
+                        .itemName(stockIn.getStockInItem().getItemName())
+                        .itemQuantity(stockIn.getStockInQuantity())
+                        .build()
+        );
     }
 
     private ItemCurrent buildItemCurrent(StockRequest stockRequest) {
