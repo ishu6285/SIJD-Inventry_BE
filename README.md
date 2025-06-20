@@ -70,7 +70,7 @@ SIJD Inventory Management System Backend is a RESTful API built with Spring Boot
 
 ### Backend Development Team
 
-#### **Ishara Umesh** - Lead Backend Developer & Project Manager
+#### **Ishara Umesh** - Lead Backend Developer & Project Manager  & Devops
 - **GitHub**: [@ishu6285](https://github.com/ishu6285)
 - **Role**: Lead Developer & GitHub Repository Manager
 - **Backend Responsibilities**:
