@@ -1,0 +1,940 @@
+{
+	"info": {
+		"_postman_id": "73ea12ac-f45f-4537-b237-660d8c6a8a28",
+		"name": "SIJD Inventory Management System - Complete API",
+		"description": "Complete API collection for SIJD Inventory Management System with authentication and stock management endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39973552",
+		"_collection_link": "https://zdataai.postman.co/workspace/zdataai-Workspace~45c59687-1c78-42ce-8df8-d5b88f6695f1/collection/39973552-73ea12ac-f45f-4537-b237-660d8c6a8a28?action=share&source=collection_link&creator=39973552"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "User Registration",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"middleName\": \"A\",\n  \"userType\": \"ADMIN\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"nickName\": \"Johnny\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/auth/user/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"auth",
+								"user",
+								"register"
+							]
+						},
+						"description": "Register a new user in the system. User type can be ADMIN or USER."
+					},
+					"response": []
+				},
+				{
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response JSON",
+									"let response = pm.response.json();",
+									"",
+									"// Check if data exists and set environment variables",
+									"if (response.data) {",
+									"    pm.environment.set(\"authToken\", response.data.token);",
+									"    pm.environment.set(\"refreshToken\", response.data.refreshToken);",
+									"    pm.environment.set(\"tokenExpiry\", response.data.expirationTime);",
+									"    pm.environment.set(\"userRole\", response.data.role);",
+									"    console.log(\"Tokens and user info saved to environment.\");",
+									"    console.log(\"Auth Token: \" + response.data.token.substring(0, 20) + \"...\");",
+									"    console.log(\"User Role: \" + response.data.role);",
+									"} else {",
+									"    console.warn(\"No data object found in response.\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@gmail.com\",\n  \"password\": \"admin@123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/auth/user/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"auth",
+								"user",
+								"login"
+							]
+						},
+						"description": "Authenticate user and receive JWT tokens. Automatically saves tokens to environment variables."
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response JSON",
+									"let response = pm.response.json();",
+									"",
+									"// Check if data exists and update tokens",
+									"if (response.data && response.data.token) {",
+									"    pm.environment.set(\"authToken\", response.data.token);",
+									"    console.log(\"Auth token refreshed successfully.\");",
+									"} else {",
+									"    console.warn(\"Token refresh failed or no token in response.\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"token\": \"{{refreshToken}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/auth/user/refresh/token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"auth",
+								"user",
+								"refresh",
+								"token"
+							]
+						},
+						"description": "Refresh JWT token using refresh token. Automatically updates authToken in environment."
+					},
+					"response": []
+				}
+			],
+			"description": "User authentication endpoints"
+		},
+		{
+			"name": "Stock Management",
+			"item": [
+				{
+					"name": "Stock In (Add Stock)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"itemName\": \"Laptop\",\n  \"quantity\": 10.50\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/admin/stock/in",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"admin",
+								"stock",
+								"in"
+							]
+						},
+						"description": "Add stock for an item. Creates new item if it doesn't exist. Requires ADMIN role."
+					},
+					"response": []
+				},
+				{
+					"name": "Stock Out (Remove Stock)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"itemName\": \"Laptop\",\n  \"quantity\": 2.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/admin/stock/out",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"admin",
+								"stock",
+								"out"
+							]
+						},
+						"description": "Remove stock for an item. Validates sufficient stock availability. Requires ADMIN role."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Stock In",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"stockInId\": 1,\n  \"itemName\": \"Laptop\",\n  \"quantity\": 15.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/admin/stock/in/edit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"admin",
+								"stock",
+								"in",
+								"edit"
+							]
+						},
+						"description": "Update an existing stock-in record. Adjusts current stock accordingly."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Stock Out",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"stockOutId\": 1,\n  \"itemName\": \"Laptop\",\n  \"quantity\": 3.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/admin/stock/out/edit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"admin",
+								"stock",
+								"out",
+								"edit"
+							]
+						},
+						"description": "Update an existing stock-out record. Validates stock availability and adjusts current stock."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Stock In",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/admin/stock/in/delete/{{stockInId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"admin",
+								"stock",
+								"in",
+								"delete",
+								"{{stockInId}}"
+							]
+						},
+						"description": "Delete a stock-in record and adjust current stock accordingly. Set stockInId variable before running."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Stock Out",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/admin/stock/out/delete/{{stockOutId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"admin",
+								"stock",
+								"out",
+								"delete",
+								"{{stockOutId}}"
+							]
+						},
+						"description": "Delete a stock-out record and adjust current stock accordingly. Set stockOutId variable before running."
+					},
+					"response": []
+				}
+			],
+			"description": "Stock in and out operations"
+		},
+		{
+			"name": "Data Retrieval",
+			"item": [
+				{
+					"name": "Get All Current Stock",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/admin/get/all/current-stock?page=0&size=10&sortField=createdDateTime&sortDirection=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"admin",
+								"get",
+								"all",
+								"current-stock"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number (0-based)"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Items per page"
+								},
+								{
+									"key": "sortField",
+									"value": "createdDateTime",
+									"description": "Field to sort by"
+								},
+								{
+									"key": "sortDirection",
+									"value": "desc",
+									"description": "Sort direction (asc/desc)"
+								}
+							]
+						},
+						"description": "Retrieve paginated list of current stock items with sorting options."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Stock In Records",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/admin/get/all/stock-in?page=0&size=10&sortField=createdDateTime&sortDirection=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"admin",
+								"get",
+								"all",
+								"stock-in"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number (0-based)"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Items per page"
+								},
+								{
+									"key": "sortField",
+									"value": "createdDateTime",
+									"description": "Field to sort by"
+								},
+								{
+									"key": "sortDirection",
+									"value": "desc",
+									"description": "Sort direction (asc/desc)"
+								}
+							]
+						},
+						"description": "Retrieve paginated list of stock-in transaction records."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Stock Out Records",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/admin/get/all/stock-out?page=0&size=10&sortField=createdDateTime&sortDirection=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"admin",
+								"get",
+								"all",
+								"stock-out"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number (0-based)"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Items per page"
+								},
+								{
+									"key": "sortField",
+									"value": "createdDateTime",
+									"description": "Field to sort by"
+								},
+								{
+									"key": "sortDirection",
+									"value": "desc",
+									"description": "Sort direction (asc/desc)"
+								}
+							]
+						},
+						"description": "Retrieve paginated list of stock-out transaction records."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Items",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/{{version}}/admin/item/search/{{searchQuery}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"{{version}}",
+								"admin",
+								"item",
+								"search",
+								"{{searchQuery}}"
+							]
+						},
+						"description": "Search for items by name using partial matching. Set searchQuery variable (e.g., 'Lap' to find 'Laptop')."
+					},
+					"response": []
+				}
+			],
+			"description": "Get stock data and search functionality"
+		},
+		{
+			"name": "Example Test Scenarios",
+			"item": [
+				{
+					"name": "Test: Complete Stock Flow",
+					"item": [
+						{
+							"name": "1. Create Admin User",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"Admin\",\n  \"lastName\": \"User\",\n  \"userType\": \"ADMIN\",\n  \"email\": \"admin@sijd.com\",\n  \"password\": \"admin@123\",\n  \"nickName\": \"Admin\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/{{version}}/auth/user/register",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"auth",
+										"user",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2. Login Admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let response = pm.response.json();",
+											"if (response.data) {",
+											"    pm.environment.set(\"authToken\", response.data.token);",
+											"    pm.environment.set(\"refreshToken\", response.data.refreshToken);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"admin@sijd.com\",\n  \"password\": \"admin@123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/{{version}}/auth/user/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"auth",
+										"user",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3. Add Multiple Items",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{authToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"itemName\": \"Dell Laptop\",\n  \"quantity\": 25.00\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/{{version}}/admin/stock/in",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"admin",
+										"stock",
+										"in"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4. Remove Some Stock",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{authToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"itemName\": \"Dell Laptop\",\n  \"quantity\": 5.00\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/{{version}}/admin/stock/out",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"admin",
+										"stock",
+										"out"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5. Check Current Stock",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{authToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/{{version}}/admin/get/all/current-stock?page=0&size=5",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"admin",
+										"get",
+										"all",
+										"current-stock"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										},
+										{
+											"key": "size",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Pre-configured test requests with sample data"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global pre-request script",
+					"console.log('Request to: ' + pm.request.url);",
+					"",
+					"// Check if we have auth token for protected endpoints",
+					"if (pm.request.url.toString().includes('/admin/') && !pm.request.headers.get('Authorization')) {",
+					"    console.warn('This endpoint requires authentication. Make sure to login first.');",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test script",
+					"pm.test('Response time is less than 2000ms', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+					"});",
+					"",
+					"pm.test('Response has proper content type', function () {",
+					"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/sijd",
+			"type": "string"
+		},
+		{
+			"key": "version",
+			"value": "v1",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userRole",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "searchQuery",
+			"value": "Lap",
+			"type": "string"
+		},
+		{
+			"key": "stockInId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "stockOutId",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}
