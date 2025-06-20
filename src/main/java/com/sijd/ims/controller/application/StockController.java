@@ -26,7 +26,6 @@ public class StockController {
 
     @PostMapping("stock/in")
     ResponseEntity<String> saveStockIn(@RequestBody @Valid StockRequest stockRequest){
-
        return ResponseEntity.ok(stockService.saveStockIn(stockRequest));
 
     }
@@ -34,6 +33,27 @@ public class StockController {
     ResponseEntity<String> saveStockOut(@RequestBody @Valid StockRequest stockRequest){
         return ResponseEntity.ok(stockService.saveStockOut(stockRequest));
     }
+
+    @PutMapping("stock/in/edit")
+    ResponseEntity<String> updateStockIn(@RequestBody @Valid StockRequest stockRequest){
+        return ResponseEntity.ok(stockService.updateStockIn(stockRequest));
+    }
+
+    @PutMapping("stock/out/edit")
+    ResponseEntity<String> updateStockOut(@RequestBody @Valid StockRequest stockRequest){
+        return ResponseEntity.ok(stockService.updateStockOut(stockRequest));
+    }
+
+    @DeleteMapping("stock/in/delete/{stockInId}")
+    ResponseEntity<String> deleteStockIn(@PathVariable Long stockInId){
+        return ResponseEntity.ok(stockService.deleteStockIn(stockInId));
+    }
+
+    @DeleteMapping("stock/out/delete/{stockOutId}")
+    ResponseEntity<String> deleteStockOut(@PathVariable Long stockOutId){
+        return ResponseEntity.ok(stockService.deleteStockOut(stockOutId));
+    }
+
 
     @GetMapping("get/all/current-stock")
     ResponseEntity<Page<ItemCurrent>> getAllCurrentItem(
@@ -66,6 +86,22 @@ public class StockController {
 
         return ResponseEntity.ok(stockService.getAllStockInItem(pageable));
 
+    }
+
+    @GetMapping("get/all/stock-out")
+    ResponseEntity<Page<StockCommonItemPaginateDto>> getAllStockOutItem(
+
+            @RequestParam(defaultValue = AppConstant.DEFAULT_PAGE_NO) final Integer page,
+            @RequestParam(defaultValue = AppConstant.DEFAULT_PAGE_SIZE) final Integer size,
+            @RequestParam(defaultValue = "createdDateTime") final String sortField,
+            @RequestParam(defaultValue = AppConstant.DEF_SORT_DIR_DESC) final String sortDirection){
+
+        Sort sort = sortDirection.equalsIgnoreCase("desc")?
+                Sort.by(sortField).descending():
+                Sort.by(sortField).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return ResponseEntity.ok(stockService.getAllStockOutItem(pageable));
     }
 
     @GetMapping("item/search/{searchQuery}")
