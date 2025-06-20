@@ -83,11 +83,12 @@ SIJD Inventory Management System Backend is a RESTful API built with Spring Boot
   - 📦 **Stock In Management**
     - Stock In API (`/admin/stock/in`)
     - Stock validation and business logic
+    - Stock In history API (`/admin/get/all/stock-in`)
   - 📊 **Data Retrieval APIs**
     - Current stock retrieval (`/admin/get/all/current-stock`)
     - Pagination and sorting implementation
     - Item search API (`/admin/item/search/{query}`)
-   - 📤 **Stock Out Management**
+  - 📤 **Stock Out Management**
     - Stock Out API (`/admin/stock/out`)
     - Stock availability validation
     - Business logic for stock deduction
@@ -103,7 +104,6 @@ SIJD Inventory Management System Backend is a RESTful API built with Spring Boot
 - **Role**: Backend API Developer
 - **Backend Responsibilities**:
   - 📋 **Transaction History APIs**
-    - Stock In history API (`/admin/get/all/stock-in`)
     - Stock Out history API (`/admin/get/all/stock-out`)
     - Pagination for transaction records
   - ✏️ **Edit Operations**
