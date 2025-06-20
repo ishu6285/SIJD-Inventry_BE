@@ -23,7 +23,8 @@ public class CorsConfig {
                 "http://localhost:3000",    // React dev server
                 "http://localhost:8081",    // Alternative port
                 "http://127.0.0.1:5500",
-                "https://yourdomain.com"    // Production domain
+                "https://yourdomain.com" ,
+                "https://sijdp-inventory.netlify.app"
         ));
 
         // Or allow all origins (NOT recommended for production)
