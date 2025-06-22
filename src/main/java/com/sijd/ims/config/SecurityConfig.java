@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -48,16 +49,18 @@ public class SecurityConfig {
         );
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request-> request.requestMatchers(whiteListUrls.toArray(new String[0])).permitAll()
-                        .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
+                .authorizeHttpRequests(request-> request
+                        .requestMatchers(whiteListUrls.toArray(new String[0])).permitAll()
+                        .requestMatchers("/admin/user/**").hasAnyAuthority("USER","ADMIN")  // More specific first
+                        .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")              // Less specific after
                         .requestMatchers("/user/**").hasAnyAuthority("USER")
-                        .requestMatchers("/admin/user/**").hasAnyAuthority("USER","ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(manager->manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .cors(Customizer.withDefaults());
 
-        return httpSecurity.build();
-
+        return httpSecurity.build(); // Don't forget this!
     }
 
     @Bean
